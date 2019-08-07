@@ -1,4 +1,4 @@
-import MainContainer from "app/root/MainContainer";
+import MainContainer from "app_containers/MainContainer";
 import StartPageContainer from "app_containers/StartPageContainer";
 
 const routes = [

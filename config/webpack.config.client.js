@@ -3,17 +3,23 @@ const path = require('path');
 
 const pug = require('pug');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const aliases = require('./aliases');
 const indexTemplate = require('./webpack/index.template'); 
 const rules = require('./webpack/webpack.config.rules');
 
 module.exports = (env) => {
-  const IS_DEV = process.env.NODE_ENV == 'development'
+  const { NODE_ENV } = process.env;
+  const IS_DEV = NODE_ENV == 'development'
 
   const config = {
     // настройки контекста сборки webpack
     context: path.resolve(__dirname),
+
+    // mode
+    mode: NODE_ENV,
     
     // короткие алиасы для загрузки файлов
     resolve: {
@@ -23,6 +29,7 @@ module.exports = (env) => {
 
     // точки входа файлов в сборку
     entry: {
+      bootstrap: 'bootstrap-loader',
       app: [
         '../src/app/app.js'
       ]
@@ -43,7 +50,7 @@ module.exports = (env) => {
     module: {
       rules: [
         rules.js,
-        rules.css(IS_DEV),
+        // rules.css(IS_DEV),
         rules.scss(IS_DEV),
         rules.images('/'),
       ]
@@ -71,9 +78,37 @@ module.exports = (env) => {
 
       }),
 
+      new MiniCssExtractPlugin({
+        filename: 'style.[contenthash].css',
+      }),
+
       new webpack.HotModuleReplacementPlugin(),
 
-    ],
+    ].concat(
+      !IS_DEV
+
+        ? // плагины для продакшена
+        [
+          new OptimizeCssAssetsPlugin({
+            assetNameRegExp: /\.css$/g,
+            cssProcessor: require('cssnano'),
+            cssProcessorOptions: {
+              zindex: false,
+              discardComments: {
+                removeAll:
+                  true
+              }
+            },
+            canPrint: true
+          })
+          ,
+
+        ]
+
+        :// плагины для разработки
+        []
+    )
+,
 
   }
 

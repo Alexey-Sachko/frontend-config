@@ -1,4 +1,5 @@
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
+// const ExtractTextPlugin = require("extract-text-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   js: {
@@ -19,29 +20,26 @@ module.exports = {
     options: { sourceMap: true }
   },
 
-  css: function (isDev) {
-    return {
-      test: /\.css$/,
-      use: isDev
-        ? ['style-loader', this.cssLoader]
-        : ExtractTextPlugin.extract(
-          {
-            fallback: 'style-loader',
-            use: [this.cssLoader]
-          }
-        )
-    }
-  },
+  // css: function (isDev) {
+  //   return {
+  //     test: /\.css$/,
+  //     use: [
+  //       isDev ? 'style-loader' : MiniCssExtractPlugin.loader, 
+  //       this.cssLoader, 
+  //       'postcss-loader'
+  //     ],
+  //   }
+  // },
 
   scss: function (isDev) {
     return {
       test: /\.scss$/,
-      use: isDev
-          ? ['style-loader', this.cssLoader, this.sassLoader]
-          : ExtractTextPlugin.extract({
-            fallback: 'style-loader',
-            use: [this.cssLoader, this.sassLoader]
-          })
+      use: [
+        isDev ? 'style-loader' : MiniCssExtractPlugin.loader, 
+        this.cssLoader, 
+        'postcss-loader', 
+        this.sassLoader
+      ],
     };
   },
 
