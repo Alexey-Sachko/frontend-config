@@ -5,6 +5,7 @@ const pug = require('pug');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 const aliases = require('./aliases');
 const indexTemplate = require('./webpack/index.template'); 
@@ -66,6 +67,18 @@ module.exports = (env) => {
       stats: 'minimal',
       clientLogLevel: 'warning'
     },
+
+    optimization: {
+      
+      minimizer: [
+        new UglifyJsPlugin({
+          cache: true,
+          parallel: true,
+          sourceMap: IS_DEV
+        })
+      ]
+    },
+
 
     plugins: [
       new HtmlWebpackPlugin({
